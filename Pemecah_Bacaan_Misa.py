@@ -21,7 +21,6 @@ terminal_candidate = []
 split_text = []
 
 while char_idx < len(text):
-    print(char_idx)
     if char_idx == len(text) - 1:
         terminal_candidate.append(char_idx)
 
@@ -53,14 +52,16 @@ while char_idx < len(text):
         if char_match:
             if ((text[char_idx] == '.' or text[char_idx] == '?' or text[char_idx] == '!') and (text[char_idx + 1] != '"')) or (text[char_idx] == ';' or text[char_idx] == ':'):
                 terminal_candidate.append(char_idx)
-            elif text[char_idx] == '"':
-                if double_quote:
-                    terminal_candidate.append(char_idx)
 
-                    double_quote = False
+                terminal_state = False
+                selection_state = True
+            elif text[char_idx] == '"' and double_quote:
+                terminal_candidate.append(char_idx)
 
-            terminal_state = False
-            selection_state = True
+                double_quote = False
+
+                terminal_state = False
+                selection_state = True
 
         char_idx += 1
 
@@ -69,15 +70,13 @@ while char_idx < len(text):
 
         if text[idx_end] == '.' or text[idx_end] == ';' or text[idx_end] == ':':
             split_text.append(text[idx_start:idx_end])
-        elif text[idx_end] == '?' or text[idx_end] == '!':
-            split_text.append(text[idx_start:idx_end + 1])
-        elif text[idx_end] == '"':
+        elif text[idx_end] == '?' or text[idx_end] == '!' or text[idx_end] == '"':
             split_text.append(text[idx_start:idx_end + 1])
 
         selection_state = False
         initial_state = True
 
-        char_idx = idx_end + 1
+        # char_idx = idx_end + 1
 
 split_text = [(element + '\n' + '(' + passage + ')') for element in split_text]
 
