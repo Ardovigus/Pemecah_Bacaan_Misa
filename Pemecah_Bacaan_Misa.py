@@ -1,6 +1,6 @@
 import re
 
-file = open('Sample.txt', 'r').read().split('\n')
+file = open('Sample1.txt', 'r').read().split('\n')
 
 passage = file[0]
 text = file[2]
@@ -21,9 +21,10 @@ double_quote = False
 terminal_candidate = []
 split_text = []
 
-char_length = 70
+char_length = 80
 
 while char_idx < len(text):
+    # print(char_idx)
     if char_idx == len(text) - 1:
         terminal_candidate.append(char_idx)
 
@@ -116,28 +117,35 @@ while char_idx < len(text):
                                 'yaitu',
                                 'yakni',
                                 'kecuali',
-                                'selain']
+                                'selain',
+                                'bahwa']
 
-            conjunction_list_pos = [(re.search(word, current_text)) for word in conjunction_list]
+            conjunction_list_pos = [(re.search(r'\s' + word, current_text)) for word in conjunction_list]
+            # print(conjunction_list_pos)
 
             for i in range(len(conjunction_list_pos)):
                 if conjunction_list_pos[i]:
-                    # conjunction_list_pos[i] = conjunction_list_pos[i].start()
                     terminal_candidate.append(conjunction_list_pos[i].start() + idx_start)
 
             terminal_candidate.sort()
 
             idx_end = terminal_candidate[-1]
 
-            if text[idx_end] == ',':
+            if text[idx_end] == ',':                
                 split_text.append(text[idx_start:idx_end])
             else:
+                idx_end -= 1
                 letter_found = False
 
                 while not(letter_found):
-                    if re.match('[a-zA-Z]', text[idx_end]):
-                        split_text.append(text[idx_start:idx_end])
+                    if re.match('[a-zA-Z,]', text[idx_end]):
+                        if text[idx_end] == ',':
+                            split_text.append(text[idx_start:idx_end])
+                        else:
+                            split_text.append(text[idx_start:idx_end + 1])
+
                         letter_found = True
+                        break
 
                     idx_end -= 1
 
